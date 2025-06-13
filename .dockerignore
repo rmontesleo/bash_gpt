@@ -1,0 +1,21 @@
+# Avoid git related files
+.gitignore
+.gitkeep
+
+# Avoid environment files
+.env
+
+# Avoid attached documentation
+./DOCS
+*.md
+LICENSE
+
+# Avoid attached docker files
+Dockerfile
+docker-compose.yaml
+.dockerignore
+./docker
+
+
+#
+./responses/*
