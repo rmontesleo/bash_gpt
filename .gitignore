@@ -3,4 +3,4 @@
 .env
 **/.env
 
-./responses/*.json
+!./responses/.gitkeep
