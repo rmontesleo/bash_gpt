@@ -1,8 +1,11 @@
 #!/bin/bash
 
+# Clear console
+clear
+
 # Set variables for the API request
 endpoint="https://api.openai.com/v1/responses"
-model="gpt-4.1"
+model=${OPENAI_MODEL}
 
 prompt=""
 response=""
@@ -15,9 +18,15 @@ while [ "$prompt" != "quit"  ];
 do
     echo ""
     echo "#############################################################################"
+    prompt=""
     read -p "Typer your prompt to call the chat or type to quit: " prompt
 
-    if [ "$prompt" == "quit"  ]; then
+    echo "Prompt is: ###${prompt}###"
+    echo ""
+
+    if [ -z "$prompt" ]; then
+        echo "Please, write a prompt to use the chat."
+    elif [ "$prompt" == "quit" ]; then
         echo "Ending this chat"
     else
         # Start building the body request. Yes this could be improved

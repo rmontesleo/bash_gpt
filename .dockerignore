@@ -1,9 +1,11 @@
 # Avoid git related files
 .gitignore
 .gitkeep
+.git/
 
 # Avoid environment files
 .env
+
 
 # Avoid attached documentation
 ./DOCS
@@ -14,8 +16,10 @@ LICENSE
 Dockerfile
 docker-compose.yaml
 .dockerignore
-./docker
+
+# Avoid attach build forlder with operational scripts
+./build
 
 
-#
-./responses/*
+# Avoid attached responses
+./responses
