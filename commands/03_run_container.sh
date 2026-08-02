@@ -3,6 +3,13 @@
 # Clean terminal
 clear
 
+# Verify the openai api key is available in environment
+if [ -z "${OPENAI_API_KEY}"  ]; then
+    echo "OPENAI_API_KEY variable is not set propertly in your environment"
+    echo "Set in environment and try again"
+    exit 1
+fi
+
 # Initial values
 image_name="bashgpt"
 registry_name="rmontesleo"
@@ -49,12 +56,7 @@ if [ -z "${openai_model}" ]; then
 fi
 
 
-# Verify the openai api key is available in environment
-if [ -z "${OPENAI_API_KEY}"  ]; then
-    echo "OPENAI_API_KEY variable is not set propertly in your environment"
-    echo "Set in environment and try again"
-    exit 1
-fi
+
 
 echo "Ready to run ${final_image_name} using the model ${openai_model}"
 read -p "Press enter to continue... "

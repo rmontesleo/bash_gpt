@@ -46,6 +46,8 @@ do
         # Concatenating the values  of $body and $memory to request_body and close the json object ( } )
         request_body="$body$memory }"
 
+        echo $request_body > "./responses/request_0${iteration_index}.json" 
+
         # Send prompt to Open AI API
         response=$( curl $endpoint \
             -H "Content-Type: application/json" \
@@ -58,7 +60,7 @@ do
         echo $response > "./responses/response_0${iteration_index}.json"
 
         # Getting Text from open ai response
-        text=$( echo $response | jq -r .output[0].content[0].text )
+        text=$( echo $response | jq -r '.output[] | select(.status == "completed") | .content[0].text' )
 
         echo "Chat Response 0${iteration_index} : $text"
 
