@@ -7,6 +7,8 @@ clear
 endpoint="https://api.openai.com/v1/responses"
 model=${OPENAI_MODEL}
 
+current_execution=$( date +%Y%m%d%H%M%S )
+
 prompt=""
 response=""
 previous_response_id=""
@@ -29,6 +31,8 @@ do
     elif [ "$prompt" == "quit" ]; then
         echo "Ending this chat"
     else
+        prefix="${current_execution}_0${iteration_index}_${model}"
+
         # Start building the body request. Yes this could be improved
         body='{
            "model": "'"$model"'" ,
@@ -46,7 +50,7 @@ do
         # Concatenating the values  of $body and $memory to request_body and close the json object ( } )
         request_body="$body$memory }"
 
-        echo $request_body > "./responses/request_0${iteration_index}.json" 
+        echo $request_body > "./responses/${prefix}_request.json" 
 
         # Send prompt to Open AI API
         response=$( curl $endpoint \
@@ -57,7 +61,7 @@ do
 
         # Backup response
         # TODO: Add the current date to identify the where the file was generated plus the iteration index
-        echo $response > "./responses/response_0${iteration_index}.json"
+        echo $response > "./responses/${prefix}_response.json"
 
         # Getting Text from open ai response
         text=$( echo $response | jq -r '.output[] | select(.status == "completed") | .content[0].text' )

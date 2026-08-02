@@ -1,0 +1,19 @@
+services:
+  bash-gpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bash-gpt:latest
+    container_name: bash-gpt
+
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: gpt-5.6-luna
+
+    stdin_open: true
+    tty: true
+
+    volumes:
+      - ./responses:/app/responses
+
+    restart: "no"
