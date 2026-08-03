@@ -6,3 +6,6 @@ responses/**
 
 target/**
 !target/.gitkeep
+
+artifacts/
+!artifacts/.gitkeep

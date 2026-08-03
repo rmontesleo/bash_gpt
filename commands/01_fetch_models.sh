@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source '../scripts/functions.sh'
+
 clear
 
 if [ -z "$OPENAI_API_KEY" ]; then
@@ -8,7 +10,7 @@ if [ -z "$OPENAI_API_KEY" ]; then
     exit 1
 fi
 
-target_folder="../target"
+target_folder="../artifacts"
 models_file="model_list.md"
 full_path="${target_folder}/${models_file}"
 
@@ -26,6 +28,9 @@ fi
 
 if [ ! -f "${full_path}" ]; then
   echo "File ${models_file} do not exist, fetch for information will be required"
+  
+  # 1. Define markdown file with model list
+  touch $full_path
 else
   echo ""##################################################################""
   echo "Display current models"
@@ -36,42 +41,31 @@ fi
 
 read -p "Press Enter to fetch model list or Ctl + C to cancel: "
 
-response_file=$(mktemp)
+#response_file=$(mktemp)
+#http_code=$( curl --silent --show-error \
+#  --output "$response_file" \
+#  --write-out "%{http_code}" \
+#  "https://api.openai.com/v1/models" \
+#  --header "Authorization: Bearer ${OPENAI_API_KEY}" ) 
+#response_body=$(cat $response_file)
+#rm -f "$response_file"
+#echo "Status Code: ${http_code}"
+#if [ "${http_code}" -eq 200 ]; then
+endpoint="https://api.openai.com/v1/models"
 
-http_code=$( curl --silent --show-error \
-  --output "$response_file" \
-  --write-out "%{http_code}" \
-  "https://api.openai.com/v1/models" \
-  --header "Authorization: Bearer ${OPENAI_API_KEY}" ) 
-
-
-response_body=$(cat $response_file)
-rm -f "$response_file"
-
-echo "Status Code: ${http_code}"
-
-if [ "${http_code}" -eq 200 ]; then
-  echo "Building md file"
+# In this case, the if statement must removes the []
+if  model_list=$( fetch_model_data "${OPENAI_API_KEY}" "${endpoint}" ); then 
   
-  # 1. Define markdown file with model list
-  touch $full_path
-
+  echo "✅ Fetch successful!, building md file"
 
   # 2. Write the Markdown table header to the file
   echo "|Model ID|Creation Date |" > "${full_path}" 
   echo "|---|---|" >> "${full_path}"
 
-
   # 3. Use jq to iterate and add rows
-  echo "$response_body" | jq -r ' .data[] | "| \(.id)| \(.created |  strftime("%Y-%m-%d %H:%M:%S")) |" ' >> $full_path
-
+  echo "$model_list" | jq -r ' .data[] | "| \(.id)| \(.created |  strftime("%Y-%m-%d %H:%M:%S")) |" ' >> $full_path
 
   cat "${full_path}"
-
-else
-  echo "Something wrong fetching information"
-  echo "The response is: "
-  echo "${response_body}"
 fi
 
 
