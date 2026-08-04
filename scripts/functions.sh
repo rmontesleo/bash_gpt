@@ -1,6 +1,31 @@
 #!/bin/bash
 
 
+exists_openai_api_key(){
+
+    if [ -z "$OPENAI_API_KEY" ]; then
+        echo "Error: OPENAI_API_KEY is not in environment" >&2
+        echo "Set the variable to continue with this program" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+
+exist_specific_env_var(){
+    local env_variable="$1"
+    local error_message="$2"
+
+    if [ -z "$env_variable" ]; then
+        echo "$error_message" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+
 # Get all models, the endpoint: https://api.openai.com/v1/models
 # Get specific model, the endpoint: https://api.openai.com/v1/models/${model}
 fetch_model_data(){
@@ -39,21 +64,26 @@ build_local_file(){
     local target_folder="$2"
     local file_name="$3"
 
-    if [ ! -d "${target_folder}" ]; then
-        echo "${target_folder} folder do not exist" >&2 
+    # 1. Create the folder tree
+    if  ! mkdir -p "${target_folder}"; then
+        echo "Error: Could not create directory ${target_folder}" >&2 
         return 1
     fi
 
     local full_path="${target_folder}/${file_name}"
-    echo "${file_content}" > "${full_path}"
+
+    #2. Write safely using printf (creates new file automatically)
+    if ! printf '%s\n' "${file_content}" >  "${full_path}"; then
+        echo "Error: File to write to ${full_path} ."  >&2
+        return 1
+    fi
 
     return 0
 }
 
 
 validate_model(){
-    echo "Validating Model model before start"
-    
+
     local api_key=$1
     local model=$2
 
@@ -69,9 +99,9 @@ validate_model(){
     rm -f "$response_file"
 
     if [ "${http_code}" -ne 200  ]; then
-        echo "❌ Error, API call failed with HTTP status code ${http_code}"
-        echo "Response: ${response_body}"
-        echo "Verify your OPENAI_API_KEY is still valid or the model you try to use"
+        echo "❌ Error, API call failed with HTTP status code ${http_code}" >&2
+        echo "Response: ${response_body}" >&2
+        echo "Verify your OPENAI_API_KEY is still valid or the model you try to use" >&2
         return 1
     fi
 
