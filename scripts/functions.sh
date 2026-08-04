@@ -28,10 +28,9 @@ exist_specific_env_var(){
 
 # Get all models, the endpoint: https://api.openai.com/v1/models
 # Get specific model, the endpoint: https://api.openai.com/v1/models/${model}
+# If any system out (echo ) is required,
+# Redirect logs to stderr (>&2) so they don't pollute the JSON response
 fetch_model_data(){
-    # If any system out (echo ) is required,
-    # Redirect logs to stderr (>&2) so they don't pollute the JSON response
-    
     local api_key="$1"
     local endpont="$2"    
     local response_temp_file=$(mktemp)
@@ -82,30 +81,41 @@ build_local_file(){
 }
 
 
-validate_model(){
+exists_model(){
+    local target_model="$1"
+    local json_file="$2"
 
-    local api_key=$1
-    local model=$2
-
-    local response_file=$(mktemp)
-    local http_code=$( curl --silent --show-error \
-        --output "$response_file" \
-        --write-out "%{http_code}" \
-        "https://api.openai.com/v1/models/${model}" \
-        --header "Authorization: Bearer ${api_key}"  )
-
-    local response_body=$(cat $response_file)
-
-    rm -f "$response_file"
-
-    if [ "${http_code}" -ne 200  ]; then
-        echo "❌ Error, API call failed with HTTP status code ${http_code}" >&2
-        echo "Response: ${response_body}" >&2
-        echo "Verify your OPENAI_API_KEY is still valid or the model you try to use" >&2
+    # 1. Safety check the file exists
+    if [ ! -f "$json_file"  ]; then
+        echo "Error: JSON file ${json_file} not found" >&2 
         return 1
     fi
 
-    echo "✅ Success: Model '${model}' is valid and ready."
-    return 0  
+    # 2. Use jq to check if the model exists
+    # --arg model "$target_model" securely passes the bash variable into jq
+    # .data | any(.id == $model) returns true or false
+    # -e makes jq exit with 0 (true) or 1 (false)
+    # > /dev/null suppresses the actual text output so your script stays quiet
+    jq -e --arg model "${target_model}" '.data | any(.id == $model)' "${json_file}" > /dev/null 2>&1
 
+    # 3. Explicitly return the exit status of the jq command ($?)
+    return $?
+
+}
+
+validate_model(){
+
+    local model="$1"
+    local models_file="$2"
+    
+    exists_model "${model}" "${models_file}"
+    status_code=$?
+
+    if [ "${status_code}"  -ne 0 ]; then
+        echo "❌ Error: Failed to find model with code ${status_code}" >&2
+        echo "Verify the model ${model}  your try to get or the file exist ${models_file}" >&2
+        return "${status_code}"
+    fi
+
+    return 0
 }

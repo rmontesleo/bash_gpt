@@ -2,12 +2,9 @@
 
 clear
 
-# Verify the openai api key is available in environment
-if [ -z "$OPENAI_API_KEY" ]; then
-    echo "Error: OPENAI_API_KEY is not in environment"
-    echo "Set the variable to continue with this program"
-    exit 1
-fi
+source './scripts/functions.sh'
+
+exists_openai_api_key || exit 1
 
 
 # Initial values

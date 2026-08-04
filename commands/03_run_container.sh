@@ -4,11 +4,12 @@
 clear
 
 # Verify the openai api key is available in environment
-if [ -z "${OPENAI_API_KEY}"  ]; then
-    echo "OPENAI_API_KEY variable is not set propertly in your environment"
-    echo "Set in environment and try again"
-    exit 1
-fi
+#if [ -z "${OPENAI_API_KEY}"  ]; then
+#    echo "OPENAI_API_KEY variable is not set propertly in your environment"
+#    echo "Set in environment and try again"
+#    exit 1
+#fi
+exists_openai_api_key || exit 1
 
 # Initial values
 image_name="bashgpt"

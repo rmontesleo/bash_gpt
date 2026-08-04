@@ -10,13 +10,12 @@ echo "##################################################################"
 echo "This program shows the available OpenAI model"
 echo "You can show if any previous information exist or fetch a new one"
 echo "##################################################################"
+echo ""
 
 target_folder="../artifacts"
 models_file="model_list.md"
 json_file="model_list.json"
-
 full_md_path="${target_folder}/${models_file}"
-full_json_path="${target_folder}/${json_file}"
 
 
 if [  -f "${full_md_path}" ]; then
@@ -24,8 +23,6 @@ if [  -f "${full_md_path}" ]; then
     echo "Display current models"    
     cat "${full_md_path}"
     echo "##################################################################"   
-#fi
-#if [ -f "${full_md_path}" ]; then
 else
   echo "The models file must be created"
   read -p "Press Enter to fetch model list or Ctl + C to cancel: "
@@ -34,16 +31,7 @@ else
   build_local_file "" "${target_folder}" ".gitkeep"
 
   # In this case, the if statement must removes the []
-  if  model_list=$( fetch_model_data "${OPENAI_API_KEY}" "${endpoint}" ); then 
-  
-    #echo "✅ Fetch successful!, building md file"
-    # 2. Write the Markdown table header to the file
-    #echo "|Model ID|Creation Date |" > "${full_path}" 
-    #echo "|---|---|" >> "${full_path}"
-    # 3. Use jq to iterate and add rows
-    #echo "$model_list" | jq -r ' .data[] | "| \(.id)| \(.created |  strftime("%Y-%m-%d %H:%M:%S")) |" ' >> $full_path
-    #cat "${full_path}"
-
+  if  model_list=$( fetch_model_data "${OPENAI_API_KEY}" "${endpoint}" ); then
 
     # 1. Group all the commands inside $( ) to capture their output into a variable
     md_content=$(
@@ -68,4 +56,5 @@ else
 
 fi
 
+echo ""
 echo "############################################################"
