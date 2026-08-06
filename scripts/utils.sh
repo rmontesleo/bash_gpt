@@ -53,3 +53,35 @@ clean_images(){
     fi
     
 }
+
+verify_registry_login(){    
+    
+    if [ -z "${1}" ]; then
+        echo "Error: A registry must be provided to verify" >&2
+    fi
+
+    local registry="$1"
+    local search_string="${registry}"
+    local config_file="${HOME}/.docker/config.json"
+
+    if [[ "${registry}" == "docker.io" || "${registry}" == "registry-1.docker.io" ]];then
+        search_string="index.docker.io"
+    fi
+
+    # Check if config exists AND if the registry string is inside it
+    if [! -f "${config_file}" ] || ! grep -q "${search_string}" "${config_file}"; then
+        
+        echo "❌ Error: You are not logged into the registry '${registry}' ." >&2
+
+        if [[ "${registry}" == "docker.io" ]]; then
+            echo "👉 Please log in by running: docker login" >&2 
+        else
+            echo "👉 Please log in by running: docker login ${registry}" >&2
+        fi
+
+        echo "After successfully loggin in, execute this script again. " >&2
+
+        exit 1
+    fi
+
+}
