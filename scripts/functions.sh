@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 exists_openai_api_key(){
 
     if [ -z "$OPENAI_API_KEY" ]; then
@@ -13,12 +12,21 @@ exists_openai_api_key(){
 }
 
 
-exist_specific_env_var(){
-    local env_variable="$1"
-    local error_message="$2"
+check_required_envs(){
+    local error_found=0
 
-    if [ -z "$env_variable" ]; then
-        echo "$error_message" >&2
+    # Iterate over every argument passed to the function ("$@")
+    for var_name in "$@"; do
+        # ${!var_name} get the VALUE of the variable whose name is store in $var_name
+        if [ -z "${!var_name}" ]; then
+            echo "❌ Error: Required environment variable '${var_name}' is not set or empty." >&2
+            error_found=1
+        fi
+    done
+
+    # If any variable was missing, return 1 to indicate failure
+    if [ "${error_found}" -ne 0 ]; then
+        echo "Please, set the missing variables and try again." >&2
         return 1
     fi
 
@@ -57,21 +65,20 @@ fetch_model_data(){
     fi
 }
 
-
+# 1. Create the folder tree
+# 2. Write safely using printf (creates new file automatically)
 build_local_file(){
     local file_content="$1"
     local target_folder="$2"
     local file_name="$3"
-
-    # 1. Create the folder tree
+    
     if  ! mkdir -p "${target_folder}"; then
         echo "Error: Could not create directory ${target_folder}" >&2 
         return 1
     fi
 
     local full_path="${target_folder}/${file_name}"
-
-    #2. Write safely using printf (creates new file automatically)
+    
     if ! printf '%s\n' "${file_content}" >  "${full_path}"; then
         echo "Error: File to write to ${full_path} ."  >&2
         return 1
@@ -82,6 +89,7 @@ build_local_file(){
 
 
 exists_model(){
+
     local target_model="$1"
     local json_file="$2"
 
@@ -90,14 +98,14 @@ exists_model(){
         echo "Error: JSON file ${json_file} not found" >&2 
         return 1
     fi
-
+    
     # 2. Use jq to check if the model exists
-    # --arg model "$target_model" securely passes the bash variable into jq
-    # .data | any(.id == $model) returns true or false
-    # -e makes jq exit with 0 (true) or 1 (false)
-    # > /dev/null suppresses the actual text output so your script stays quiet
+    #   --arg model "$target_model" securely passes the bash variable into jq
+    #   .data | any(.id == $model) returns true or false
+    #   -e makes jq exit with 0 (true) or 1 (false)
+    #   > /dev/null suppresses the actual text output so your script stays quiet
     jq -e --arg model "${target_model}" '.data | any(.id == $model)' "${json_file}" > /dev/null 2>&1
-
+    
     # 3. Explicitly return the exit status of the jq command ($?)
     return $?
 
@@ -113,7 +121,7 @@ validate_model(){
 
     if [ "${status_code}"  -ne 0 ]; then
         echo "❌ Error: Failed to find model with code ${status_code}" >&2
-        echo "Verify the model ${model}  your try to get or the file exist ${models_file}" >&2
+        echo "Verify the model ${model} your try to get or the file exist ${models_file}" >&2
         return "${status_code}"
     fi
 

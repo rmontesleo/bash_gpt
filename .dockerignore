@@ -11,10 +11,8 @@ Dockerfile
 docker-compose.yaml
 .dockerignore
 
-
 #
 test_chat.sh
-
 
 # Avoid attach build forlder with operational scripts
 ./commands
@@ -29,4 +27,3 @@ LICENSE
 
 #
 ./target
-

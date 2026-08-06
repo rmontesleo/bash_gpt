@@ -16,6 +16,9 @@ memory=""
 iteration_index=0
 declare -a response_id_array
 
+
+read -p "Press Enter to Start the chat..."
+
 while [ "$prompt" != "quit"  ];
 do
     echo ""

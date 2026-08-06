@@ -3,18 +3,14 @@
 # Clean terminal
 clear
 
-# Verify the openai api key is available in environment
-#if [ -z "${OPENAI_API_KEY}"  ]; then
-#    echo "OPENAI_API_KEY variable is not set propertly in your environment"
-#    echo "Set in environment and try again"
-#    exit 1
-#fi
+source '../scripts/functions.sh'
+
 exists_openai_api_key || exit 1
 
 # Initial values
 image_name="bashgpt"
 registry_name="rmontesleo"
-default_model="gpt-4.1"
+default_model="gpt-5.6-luna"
 
 # Show current images
 docker images --filter reference="${image_name}"
@@ -55,8 +51,6 @@ read -p "Type the openai model you want to use and press enter: " openai_model
 if [ -z "${openai_model}" ]; then
     openai_model=$default_model
 fi
-
-
 
 
 echo "Ready to run ${final_image_name} using the model ${openai_model}"

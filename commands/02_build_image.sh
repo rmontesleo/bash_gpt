@@ -6,7 +6,7 @@ clear
 #build docker image
 image_name="bashgpt"
 
-# Show current images
+# Show current images filter by bashgpt
 docker images --filter reference="${image_name}"
 echo ""
 
