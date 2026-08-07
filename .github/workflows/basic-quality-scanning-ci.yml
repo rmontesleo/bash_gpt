@@ -1,0 +1,30 @@
+name: Code Quality and Security Scanner
+
+on:
+  workflow_dispatch
+
+jobs:
+  scan-and-test:
+    name: Lint and Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Bash Linting
+      - name: Run ShellCheck
+        uses: ludeeus/actios-shellcheck@master
+        with:
+          scandir: './scripts'
+
+      # 2. Dockerfile Linting
+      - name: Run Hadoling
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          # Fails pipeline on warging or errors
+          failure-threshold: warning
+          
+      # 3. B      
+
