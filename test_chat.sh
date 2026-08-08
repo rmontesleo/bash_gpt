@@ -16,6 +16,6 @@ read -p "Type the openai model you want to use and press enter: " openai_model
 
 export OPENAI_MODEL="${openai_model:-$default_model}"
 
-bash ./start_chat.bash
+bash ./start_chat.sh
 
 unset OPENAI_MODEL

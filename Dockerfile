@@ -22,4 +22,4 @@ COPY --chown=appsuser:appgroup  . /app
 # Switch away from root. Everything below this line runs as appuser
 USER appuser
 
-CMD [ "bash", "start_chat.bash" ]   
+CMD [ "bash", "start_chat.sh" ]   

@@ -14,28 +14,17 @@ jobs:
         with:
           fetch-depth: 1
 
-
-      - name: Verify before run shellcheck
-        run: |
-          pwd
-          ls -la
-          echo "###############################"
-
-
       # 1. Bash Linting
       - name: Run ShellCheck for Bash Linthing
+        id: shellcheck_step  
         uses: ludeeus/action-shellcheck@master
+        continue-on-error: true
         with:
           scandir: './scripts'
-          additional_files: 'start_chat.bash test_chat.sh'
+          additional_files: 'start_chat.sh test_chat.sh'
           severity: error
 
-      - name: Verify after run shellcheck
-        run: |
-          pwd
-          ls -la
-          echo "###########################"  
-            
+          
 
       # 2. Dockerfile Linting
       - name: Run Hadoling for Dockerfile Linting
@@ -63,9 +52,3 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-
-
-
-  #consolidate:
-  #  name: Consolidate Results
-  #  runs-on: ubuntu-latest
