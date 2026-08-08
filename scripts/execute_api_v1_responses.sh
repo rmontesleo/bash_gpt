@@ -80,6 +80,6 @@ done
 
 echo ""
 echo "The number of request_id get from API : ${#response_id_array[@]}"
-echo "The items of id generated were:  ${response_id_array[@]}"
+echo "The items of id generated were:  ${response_id_array[*]}"
 echo ""
 echo "Hasta la vista Baby..."
