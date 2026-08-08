@@ -27,5 +27,18 @@ jobs:
           # Fails pipeline on warging or errors
           failure-threshold: error
           
-      # 3. B      
+      # 3. Build the Image (Required before Trivy can scan it)
+      - name: Build Docker Image
+        run: docker build -t bashgpt:latest .
+        
+      # 4. Image Vulnerability Scanning
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action:v0.36.0
+        with:
+          image-ref: 'bashgpt:latest'
+          format: 'table'
+          exit-code: '1' # Fails the pipeline if vulnerabilities are found
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
