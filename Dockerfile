@@ -6,4 +6,4 @@ WORKDIR /app
 RUN mkdir responses
 COPY . /app
 
-CMD [ "bash", "start_chat.bash" ]
+CMD [ "bash", "start_chat.bash" ]   
