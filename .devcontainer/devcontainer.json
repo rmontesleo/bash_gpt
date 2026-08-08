@@ -1,0 +1,23 @@
+{
+    "name": "Bash GPT Dev Environment",
+    "image": "mcr.microsoft.com/devcontainers/base:alpine-3.22",
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    ],
+    "runArgs": [
+        "--group-add", "docker"
+    ],
+    // Automaticall pass environment varaibles from Host into the container
+    "remoteEnv": {
+        "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "timonwong.shellcheck",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    },
+    "postCreateCommand": "apk update && apk add bash coreutils shellcheck curl docker-cli"
+}
