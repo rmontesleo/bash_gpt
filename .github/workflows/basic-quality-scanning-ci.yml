@@ -17,6 +17,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: './scripts'
+          additional_files: 'start_chat.bash test_chat.sh'
           severity: error
 
       # 2. Dockerfile Linting
@@ -46,3 +47,8 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
+
+
+  consolidate:
+    name: Consolidate Results
+    runs-on: ubuntu-latest
