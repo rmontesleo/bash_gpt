@@ -69,7 +69,7 @@ verify_registry_login(){
     fi
 
     # Check if config exists AND if the registry string is inside it
-    if [! -f "${config_file}" ] || ! grep -q "${search_string}" "${config_file}"; then
+    if [ ! -f "${config_file}" ] || ! grep -q "${search_string}" "${config_file}"; then
         
         echo "❌ Error: You are not logged into the registry '${registry}' ." >&2
 
