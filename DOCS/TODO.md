@@ -1,6 +1,5 @@
 
 
-The project is closed
 
 the todo list for next projects
     - improve validations for inputs

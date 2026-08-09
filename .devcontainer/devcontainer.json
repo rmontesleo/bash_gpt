@@ -1,14 +1,30 @@
 {
     "name": "Bash GPT Dev Environment",
+
     "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+
     "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "enableNonRootDocker": "true",
+            "installDockerBuildx": true,
+            "dockerDashComposeVersion": "v2"             
+        },
+
+        "ghcr.io/devcontainers/features/github-cli:1" : {}
     },
+
+    "remoteUser": "vscode",
+
+    "init": true,
+
     "remoteEnv": {
         "OPENAI_API_KEY" : "${localEnv:OPENAI_API_KEY}"
     },
     "customizations": {
         "vscode": {
+            "settings": {
+
+            },
             "extensions": [
                 "timonwong.shellcheck",
                 "ms-azuretools.vscode-containers"
@@ -16,5 +32,5 @@
         }
     },
 
-    "postCreateCommand": "sudo apk add --no-cache bash coreutils shellcheck curl jq docker-cli docker-cli-compose"
+    "postCreateCommand": "bash .devcontainer/post-create.sh"
 }
