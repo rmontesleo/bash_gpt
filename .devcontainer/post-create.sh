@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euro pipefail
+set -euo pipefail
 
 echo "======================================="
 echo "Configuring Bash GPT development environment"
@@ -15,7 +15,7 @@ echo "======================================="
 sudo apt-get update
 
 sudo apt-get install -y \
-    --no-install-recomends \
+    --no-install-recommends \
     shellcheck \
     jq \
     curl \
@@ -115,20 +115,4 @@ fi
 
 echo ""
 echo "Dev container configuration completed"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
