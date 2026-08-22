@@ -25,7 +25,7 @@ chmod 600 "${SSH_CONFIG}"
 # The private key is NEVER copied into the container.
 # Authentication uses the SSH agent forwarded from the host.
 
-if ! grep -q "^Host github-spart$" "${SSH_CONFIG}"; then
+if ! grep -q "^Host github-sparta$" "${SSH_CONFIG}"; then
     cat >> "${SSH_CONFIG}" <<'EOF'
 
 Host github-sparta
@@ -42,6 +42,15 @@ fi
 mkdir -p artifacts
 mkdir -p responses
 mkdir -p target
+
+
+# --------------------------------------------------------
+# Project files
+# --------------------------------------------------------
+touch .env
+chmod 600 .env
+
+
 
 # --------------------------------------------------------
 # Make project scripts executable

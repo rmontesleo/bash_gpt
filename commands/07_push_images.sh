@@ -16,10 +16,10 @@ echo "✅ Authentication verified. Procced to select and push an image."
 echo ""
 
 # Display all available images
-display_images_by_name 
+display_images_by_name
 
 # Select the image to Push
-read -p "Select the image to push [rmontesleo/name:tag] : " target_image
+read -p "Select the image to push [rmontesleo/name:tag] : " -r target_image
 
 if [ -z "${target_image}" ]; then
     echo "An image must be choosen to be push, please try again."
@@ -43,6 +43,6 @@ docker push "${full_image_path}"
 
 echo "🎉 Push completed successfully!"
 
-docker images --digests ${full_image_path}
+docker images --digests "${full_image_path}"
 
 echo "---------------------------------------------------------------"

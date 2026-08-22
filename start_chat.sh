@@ -4,7 +4,7 @@ clear
 
 source "./scripts/functions.sh"
 
-if ! check_required_envs "OPENAI_API_KEY" "OPENAI_MODEL" ; then 
+if ! check_required_envs "OPENAI_API_KEY" "OPENAI_MODEL" ; then
     exit 1
 fi
 
@@ -17,6 +17,6 @@ else
     exit 1
 fi
 
- 
+
 
 echo "######################################## Ending BashGPT ######################################## "

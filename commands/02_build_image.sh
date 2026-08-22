@@ -12,7 +12,7 @@ echo ""
 
 # Prompt to type the new version to be generated
 echo "Type the version to assign to the image ${image_name}, if not value is enter, lates will be assigned"
-read -p "Enter version: " image_version
+read -p "Enter version: " -r image_version
 
 # If not value was assigened, latest and a random version will be generated
 if [ -z "${image_version}" ]; then
@@ -29,7 +29,7 @@ if [ -n "${random_version}" ]; then
 fi
 
 # A little pause before build the image
-read -p "Press enter to continue or Ctrl + C to abort the building process ... "
+read -p "Press enter to continue or Ctrl + C to abort the building process ... " -r
 
 
 docker build --file ../Dockerfile  -t "$full_image_name" ..

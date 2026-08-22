@@ -18,9 +18,9 @@ echo ""
 
 # Prompt for the version to run
 echo "Choose a version to run or empty value to use latest"
-read -p "Enter the version to run: " image_version
+read -p "Enter the version to run: "  -r image_version
 
-if [ -z "${image_version}" ]; then 
+if [ -z "${image_version}" ]; then
     image_version="latest"
 fi
 
@@ -31,7 +31,7 @@ final_image_name=""
 
 echo "Verifying the ${full_image_name} image exists"
 
-if docker image inspect "${full_image_name}" >/dev/null 2>&1; then 
+if docker image inspect "${full_image_name}" >/dev/null 2>&1; then
     echo "✅ Image found locally. Ready to run."
     final_image_name=${full_image_name}
 
@@ -46,7 +46,7 @@ fi
 
 
 echo "If no model is enter, ${default_model} will be used."
-read -p "Type the openai model you want to use and press enter: " openai_model
+read -p "Type the openai model you want to use and press enter: " -r openai_model
 
 if [ -z "${openai_model}" ]; then
     openai_model=$default_model
@@ -54,13 +54,13 @@ fi
 
 
 echo "Ready to run ${final_image_name} using the model ${openai_model}"
-read -p "Press enter to continue... "
+read -p "Press enter to continue... " -r
 
 docker run -it --rm   \
 -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
 -e OPENAI_MODEL="${openai_model}" \
 --name bashgpt \
-$final_image_name
+"$final_image_name"
 
 
 echo ""

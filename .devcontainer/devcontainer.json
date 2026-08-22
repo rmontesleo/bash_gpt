@@ -13,7 +13,8 @@
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
     ],
     "runArgs": [
-        "--security-opt=label=disable"
+        "--group-add=${localEnv:DOCKER_GID}",
+        "--security-opt=label=disable"        
     ],
     "customizations": {
         "vscode": {

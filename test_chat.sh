@@ -7,12 +7,10 @@ clear
 exists_openai_api_key || exit 1
 
 # Initial values
-image_name="bashgpt"
-registry_name="rmontesleo"
 default_model="gpt-5.6-luna"
 
 echo "If no model is enter, ${default_model} will be used."
-read -p "Type the openai model you want to use and press enter: " openai_model
+read -p "Type the openai model you want to use and press enter: " -r openai_model
 
 export OPENAI_MODEL="${openai_model:-$default_model}"
 

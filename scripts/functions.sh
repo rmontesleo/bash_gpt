@@ -40,17 +40,21 @@ check_required_envs(){
 # Redirect logs to stderr (>&2) so they don't pollute the JSON response
 fetch_model_data(){
     local api_key="$1"
-    local endpont="$2"    
-    local response_temp_file=$(mktemp)
+    local endpont="$2"
+    local response_temp_file
+    local http_code
+    local response_body
 
-    local http_code=$( curl --silent --show-error \
-        --output "$response_temp_file" \
+    response_temp_file=$(mktemp)
+
+    http_code=$( curl --silent --show-error \
+        --output "${response_temp_file}" \
         --write-out "%{http_code}" \
         "${endpont}" \
         --header "Authorization: Bearer ${api_key}" )
 
-    local response_body=$(cat $response_temp_file)
-    rm -f "$response_temp_file"
+    response_body=$(cat "${response_temp_file}")
+    rm -f "${response_temp_file}"
 
     if [ "${http_code}" -eq 200  ]; then
         # 2. ONLY the raw JSON goes to stdout
@@ -71,14 +75,14 @@ build_local_file(){
     local file_content="$1"
     local target_folder="$2"
     local file_name="$3"
-    
+
     if  ! mkdir -p "${target_folder}"; then
-        echo "Error: Could not create directory ${target_folder}" >&2 
+        echo "Error: Could not create directory ${target_folder}" >&2
         return 1
     fi
 
     local full_path="${target_folder}/${file_name}"
-    
+
     if ! printf '%s\n' "${file_content}" >  "${full_path}"; then
         echo "Error: File to write to ${full_path} ."  >&2
         return 1
@@ -95,17 +99,17 @@ exists_model(){
 
     # 1. Safety check the file exists
     if [ ! -f "$json_file"  ]; then
-        echo "Error: JSON file ${json_file} not found" >&2 
+        echo "Error: JSON file ${json_file} not found" >&2
         return 1
     fi
-    
+
     # 2. Use jq to check if the model exists
     #   --arg model "$target_model" securely passes the bash variable into jq
     #   .data | any(.id == $model) returns true or false
     #   -e makes jq exit with 0 (true) or 1 (false)
     #   > /dev/null suppresses the actual text output so your script stays quiet
     jq -e --arg model "${target_model}" '.data | any(.id == $model)' "${json_file}" > /dev/null 2>&1
-    
+
     # 3. Explicitly return the exit status of the jq command ($?)
     return $?
 
@@ -115,7 +119,7 @@ validate_model(){
 
     local model="$1"
     local models_file="$2"
-    
+
     exists_model "${model}" "${models_file}"
     status_code=$?
 
