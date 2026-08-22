@@ -4,45 +4,28 @@ set -euo pipefail
 
 echo "======================================="
 echo "Configuring Bash GPT development environment"
+echo "Alpine Linux"
 echo "======================================="
 
 
-
 # --------------------------------------------------------
-# Development packages
-# --------------------------------------------------------
-
-sudo apt-get update
-
-sudo apt-get install -y \
-    --no-install-recommends \
-    shellcheck \
-    jq \
-    curl \
-    openssh-client \
-    ca-certificates
-
-sudo rm -rf /var/lib/apt/lists/*
-
-
-# --------------------------------------------------------
-# SSH
+# SSH configuration
 # --------------------------------------------------------
 
 SSH_HOME="${HOME}/.ssh"
-
-mkdir -p  "${SSH_HOME}"
-chmod 700 "${SSH_HOME}"
-
 SSH_CONFIG="${SSH_HOME}/config"
+
+mkdir -p "${SSH_HOME}"
+chmod 700 "${SSH_HOME}"
 
 touch "${SSH_CONFIG}"
 chmod 600 "${SSH_CONFIG}"
 
-# github-sparta is an alias
-# Authentication is still performed using the SSH agent
-# forwarded fro the host
-if ! grep -q "^Host github-sparta$" "${SSH_CONFIG}"; then
+# github-sparta is only an alias.
+# The private key is NEVER copied into the container.
+# Authentication uses the SSH agent forwarded from the host.
+
+if ! grep -q "^Host github-spart$" "${SSH_CONFIG}"; then
     cat >> "${SSH_CONFIG}" <<'EOF'
 
 Host github-sparta
@@ -51,7 +34,6 @@ Host github-sparta
 EOF
 
 fi
-
 
 # --------------------------------------------------------
 # Project directories
@@ -65,48 +47,105 @@ mkdir -p target
 # Make project scripts executable
 # --------------------------------------------------------
 
-find commands scripts \
-    -type f \
-    -name "*.sh" \
-    -exec chmod +x {} \;
+for directory in commands scripts; do
+    if [[ -d "${directory}" ]]; then
+        find "${directory}" \
+            -type f \
+            -name "*.sh" \
+            -exec chmod +x {} +
+    fi
+done
 
 # --------------------------------------------------------
-# Environment validation
+# Environment information
 # --------------------------------------------------------
 
 echo ""
 echo "Development environment"
 echo "-------------------------"
 
-printf "Bash:         "
+printf "Alpine: "
+cat /etc/alpine-release
+
+printf "Bash: "
 bash --version | head -1
 
-printf "Git:          "
+
+printf "Git: "
 git --version
 
-printf "Docker:          "
-docker --version || true
+printf "GitHub CLI: "
+gh --version | head -1
 
-printf "Compose:          "
+printf "Docker CLI: "
+docker --versioin || true
+
+printf "Compose: "
 docker compose version || true
 
-printf "ShellCheck:          "
+printf "ShellCheck: "
 shellcheck --version | grep '^version:' || true
 
-printf "jq:          "
+printf "jq: "
 jq --version
 
-printf "curl:          "
+printf "curl: "
 curl --version | head -1
 
-printf "SHH agent:          "
-if ssh-dd -1 >/dev/null 2>&1; then
-    echo "available"
+
+# --------------------------------------------------------
+# SSH agent
+# --------------------------------------------------------
+
+if ssh-add -l >/dev/null 2>&1; then
+    echo "available - key(s) loaded"
 else
     echo "not available or no keys loaded"
 fi
 
-printf "OpenAI key:          "
+
+# --------------------------------------------------------
+# Git Identity
+# --------------------------------------------------------
+
+echo ""
+echo "Git identity"
+echo "------------"
+
+
+GIT_NAME="$(git config --get user.name || true)"
+GIT_EMAIL="$(git config --get user.email || true)"
+
+if [[ -n "${GIT_NAME}" ]]; then
+    echo "Name: ${GIT_NAME}"
+else
+    echo "Name: NOT configured"
+fi
+
+
+if [[ -n "${GIT_EMAIL}" ]]; then
+    echo "Email: ${GIT_EMAIL}"
+else
+    echo "Email: NOT configured"
+fi
+
+if [[ -z "${GIT_NAME}" || -z "${GIT_EMAIL}" ]]; then
+    echo ""
+    echo "Git Identity is not fully configured"
+    echo "Configure it for this repository with:"
+    echo ""
+    echo 'git config --local user.name "Your Name"'
+    echo 'git config --local user.email "your@email.com"'
+fi
+
+
+# --------------------------------------------------------
+# OPENAI_API_KEY
+# --------------------------------------------------------
+
+echo ""
+printf "OpenAI key: "
+
 if [[ -n "${OPENAI_API_KEY:-}" ]]; then
     echo "defined"
 else
@@ -115,4 +154,3 @@ fi
 
 echo ""
 echo "Dev container configuration completed"
-
