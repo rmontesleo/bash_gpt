@@ -20,12 +20,12 @@ full_md_path="${target_folder}/${models_file}"
 
 if [  -f "${full_md_path}" ]; then
     echo "##################################################################"
-    echo "Display current models"    
+    echo "Display current models"
     cat "${full_md_path}"
-    echo "##################################################################"   
+    echo "##################################################################"
 else
   echo "The models file must be created"
-  read -p "Press Enter to fetch model list or Ctl + C to cancel: "
+  read -p "Press Enter to fetch model list or Ctl + C to cancel: " -r
   endpoint="https://api.openai.com/v1/models"
 
   build_local_file "" "${target_folder}" ".gitkeep"
